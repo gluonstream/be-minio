@@ -1,4 +1,4 @@
-package com.execodex.app.config;
+package com.execodex.app.routes;
 
 import com.execodex.app.handler.GreetingHandler;
 import org.springframework.context.annotation.Bean;
@@ -20,7 +20,7 @@ public class AppRouter {
     public RouterFunction<ServerResponse> routerFunction(GreetingHandler greetingHandler) {
         return RouterFunctions.route()
                 .add(route(GET("/hello").and(accept(MediaType.TEXT_PLAIN)), greetingHandler::handleHello))
-                .add(route(GET("/appointment").and(accept(MediaType.APPLICATION_JSON)), greetingHandler::handleAppointment))
+                .add(route(GET("/appointment"), greetingHandler::handleAppointment))
                 .build()
                 ;
 
