@@ -32,6 +32,9 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql") // we do need this for liquibase
     implementation("org.postgresql:r2dbc-postgresql")
 
+    // MinIO
+    implementation("io.minio:minio:8.6.0")
+
     //documentation
     implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:3.0.1")
     testImplementation("org.springframework.boot:spring-boot-starter-webflux-test")
