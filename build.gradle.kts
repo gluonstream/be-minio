@@ -31,6 +31,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-liquibase:4.0.1")
     runtimeOnly("org.postgresql:postgresql") // we do need this for liquibase
     implementation("org.postgresql:r2dbc-postgresql")
+
+    //documentation
+    implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:3.0.1")
     testImplementation("org.springframework.boot:spring-boot-starter-webflux-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
