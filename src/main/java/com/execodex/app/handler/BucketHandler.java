@@ -11,21 +11,28 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import software.amazon.awssdk.awscore.presigner.PresignedRequest;
 import software.amazon.awssdk.core.async.AsyncRequestBody;
 import software.amazon.awssdk.core.async.AsyncResponseTransformer;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.model.*;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 
+import java.time.Duration;
 import java.util.List;
 
 @Service
 public class BucketHandler {
 
     private final S3AsyncClient s3AsyncClient;
+    private final S3Presigner s3Presigner;
     private final DefaultDataBufferFactory bufferFactory = new DefaultDataBufferFactory();
 
-    public BucketHandler(S3AsyncClient s3AsyncClient) {
+    public BucketHandler(S3AsyncClient s3AsyncClient, S3Presigner s3Presigner) {
         this.s3AsyncClient = s3AsyncClient;
+        this.s3Presigner = s3Presigner;
     }
 
     public Mono<ServerResponse> createBucket(ServerRequest serverRequest) {
@@ -108,6 +115,28 @@ public class BucketHandler {
                 .onErrorResume(e -> ServerResponse.status(404).bodyValue("File not found: " + e.getMessage()));
 
 
+    }
+
+    public Mono<ServerResponse> getPresignedUrl(ServerRequest serverRequest) {
+        String bucket = serverRequest.pathVariable("bucket");
+        String filename = serverRequest.pathVariable("filename");
+
+        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                .bucket(bucket)
+                .key(filename)
+                .build();
+
+        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+                .signatureDuration(Duration.ofMinutes(10))
+                .getObjectRequest(getObjectRequest)
+                .build();
+
+        return Mono.fromCallable(() -> s3Presigner
+                        .presignGetObject(presignRequest))
+                .filter(PresignedRequest::isBrowserExecutable)
+                .map(PresignedGetObjectRequest::url)
+                .flatMap(url -> ServerResponse.ok().bodyValue(url.toString()))
+                .onErrorResume(e -> ServerResponse.status(500).bodyValue("Error: " + e.getMessage()));
     }
 
     // In the future, implement renameBucket method
