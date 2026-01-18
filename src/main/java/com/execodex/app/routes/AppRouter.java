@@ -66,6 +66,7 @@ public class AppRouter {
     public RouterFunction<ServerResponse> routerFunction(GreetingHandler greetingHandler) {
         return RouterFunctions.route()
                 .add(route(GET("/hello").and(accept(MediaType.TEXT_PLAIN)), greetingHandler::handleHello))
+                .add(route(GET("/greetings"), greetingHandler::handleHello))
                 .add(route(GET("/appointment"), greetingHandler::handleAppointment))
                 .build()
                 ;
