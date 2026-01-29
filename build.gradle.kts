@@ -1,3 +1,5 @@
+import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
+
 plugins {
     java
     id("org.springframework.boot") version "4.0.1"
@@ -46,4 +48,11 @@ dependencies {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.named<BootBuildImage>("bootBuildImage") {
+    val tag = project.findProperty("imageTag")?.toString() ?: "latest"
+
+    imageName.set("avrabie/iaka-davide:$tag")
+    tags.set(listOf("avrabie/iaka-davide:latest"))
 }
