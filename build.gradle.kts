@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.execodex"
-version = "0.0.1-SNAPSHOT"
+version = "1.0.2"
 description = "app"
 
 java {
@@ -53,6 +53,6 @@ tasks.withType<Test> {
 tasks.named<BootBuildImage>("bootBuildImage") {
     val tag = project.findProperty("imageTag")?.toString() ?: "latest"
 
-    imageName.set("avrabie/iaka-davide:$tag")
-    tags.set(listOf("avrabie/iaka-davide:latest"))
+    imageName.set("gluonstream/be-minio:$tag")
+    tags.set(listOf("gluonstream/be-minio:latest"))
 }
