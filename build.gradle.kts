@@ -44,6 +44,9 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:3.0.1")
     testImplementation("org.springframework.boot:spring-boot-starter-webflux-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+    //vulnerabilities
+    testImplementation("org.assertj:assertj-core:3.27.7")
 }
 
 tasks.withType<Test> {
