@@ -1,0 +1,107 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: be-minio-config
+data:
+  SPRING_R2DBC_URL: "r2dbc:postgresql://postgres:5432/appdb"
+  MINIO_URL: "http://minio:9000"
+  MINIO_BUCKET_NAME: "iaka-documents"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: be-minio-secret
+type: Opaque
+data:
+  # echo -n 'appuser' | base64
+  SPRING_R2DBC_USERNAME: YXBwdXNlcg==
+  # echo -n 'apppass' | base64
+  SPRING_R2DBC_PASSWORD: YXBwcGFzcw==
+  # echo -n 'minioadmin' | base64
+  MINIO_ACCESS_KEY: bWluaW9hZG1pbg==
+  # echo -n 'minioadmin' | base64
+  MINIO_SECRET_KEY: bWluaW9hZG1pbg==
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: be-minio
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: be-minio
+  template:
+    metadata:
+      labels:
+        app: be-minio
+    spec:
+      containers:
+      - name: be-minio
+        image: gluonstream/be-minio:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: SPRING_R2DBC_URL
+          valueFrom:
+            configMapKeyRef:
+              name: be-minio-config
+              key: SPRING_R2DBC_URL
+        - name: MINIO_URL
+          valueFrom:
+            configMapKeyRef:
+              name: be-minio-config
+              key: MINIO_URL
+        - name: MINIO_BUCKET_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: be-minio-config
+              key: MINIO_BUCKET_NAME
+        - name: SPRING_R2DBC_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: be-minio-secret
+              key: SPRING_R2DBC_USERNAME
+        - name: SPRING_R2DBC_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: be-minio-secret
+              key: SPRING_R2DBC_PASSWORD
+        - name: MINIO_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: be-minio-secret
+              key: MINIO_ACCESS_KEY
+        - name: MINIO_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: be-minio-secret
+              key: MINIO_SECRET_KEY
+        # Disable docker-compose in K8s
+        - name: SPRING_DOCKER_COMPOSE_ENABLED
+          value: "false"
+        livenessProbe:
+          httpGet:
+            path: /actuator/health/liveness
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /actuator/health/readiness
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: be-minio
+spec:
+  type: NodePort
+  selector:
+    app: be-minio
+  ports:
+  - port: 8080
+    targetPort: 8080
+    nodePort: 30080
