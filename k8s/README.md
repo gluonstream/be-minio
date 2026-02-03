@@ -17,28 +17,6 @@ The easiest way to deploy everything at once is using the provided `kustomizatio
 kubectl apply -k k8s/
 ```
 
-### Option 2: Manual Deployment (Order Matters)
-
-If you prefer to apply files individually, follow this order to ensure dependencies (database and storage) are ready before the application starts.
-
-1.  **Namespace**:
-    ```bash
-    kubectl apply -f k8s/namespace.yaml
-    ```
-2.  **PostgreSQL**:
-    ```bash
-    kubectl apply -f k8s/postgres.yaml -n be-minio
-    ```
-3.  **MinIO**:
-    ```bash
-    kubectl apply -f k8s/minio.yaml -n be-minio
-    ```
-4.  **be-minio Application**:
-    Wait for PostgreSQL and MinIO pods to be `Running` and `Ready`, then apply the application:
-    ```bash
-    kubectl apply -f k8s/be-minio.yaml -n be-minio
-    ```
-
 ## Verification
 
 Check the status of your pods in the `be-minio` namespace:

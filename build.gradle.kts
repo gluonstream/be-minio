@@ -43,7 +43,8 @@ dependencies {
 
     //documentation
     implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:3.0.1")
-    testImplementation("org.springframework.boot:spring-boot-starter-webflux-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.security:spring-security-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     //vulnerabilities
