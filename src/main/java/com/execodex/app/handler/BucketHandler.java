@@ -1,6 +1,7 @@
 package com.execodex.app.handler;
 
 import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -65,26 +66,26 @@ public class BucketHandler {
         return serverRequest.multipartData()
                 .flatMapMany(parts -> Flux.fromIterable(parts.get("file")))
                 .cast(FilePart.class)
-                .flatMap(filePart -> {
-                    String filename = filePart.filename();
-                    long contentLength = filePart.headers().getContentLength();
+                .flatMap(filePart -> DataBufferUtils.join(filePart.content())
+                        .flatMap(dataBuffer -> {
+                            String filename = filePart.filename();
+                            long contentLength = dataBuffer.readableByteCount();
 
-                    PutObjectRequest.Builder putObjectRequestBuilder = PutObjectRequest.builder()
-                            .bucket(bucket)
-                            .key(filename)
-                            .contentType(Optional.ofNullable(filePart.headers().getContentType())
-                                    .map(MediaType::toString)
-                                    .orElse(MediaType.APPLICATION_OCTET_STREAM_VALUE));
+                            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                                    .bucket(bucket)
+                                    .key(filename)
+                                    .contentLength(contentLength)
+                                    .contentType(Optional.ofNullable(filePart.headers().getContentType())
+                                            .map(MediaType::toString)
+                                            .orElse(MediaType.APPLICATION_OCTET_STREAM_VALUE))
+                                    .build();
 
-                    if (contentLength > 0) {
-                        putObjectRequestBuilder.contentLength(contentLength);
-                    }
+                            AsyncRequestBody asyncRequestBody = AsyncRequestBody.fromByteBuffer(dataBuffer.asByteBuffer());
 
-                    AsyncRequestBody asyncRequestBody = AsyncRequestBody.fromPublisher(filePart.content().map(DataBuffer::asByteBuffer));
-
-                    return Mono.fromFuture(s3AsyncClient.putObject(putObjectRequestBuilder.build(), asyncRequestBody))
-                            .thenReturn(filename);
-                })
+                            return Mono.fromFuture(s3AsyncClient.putObject(putObjectRequest, asyncRequestBody))
+                                    .doFinally(signalType -> DataBufferUtils.release(dataBuffer))
+                                    .thenReturn(filename);
+                        }))
                 .collectList()
                 .flatMap(filenames -> ServerResponse.ok().bodyValue("Uploaded files: " + String.join(", ", filenames)))
                 .onErrorResume(e -> ServerResponse.status(500).bodyValue("Error: " + e.getMessage()));
