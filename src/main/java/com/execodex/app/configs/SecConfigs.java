@@ -24,7 +24,8 @@ public class SecConfigs {
         http
                 .authorizeExchange(exchage -> exchage
                         .pathMatchers("/actuator/**").permitAll()
-                        .pathMatchers("/greetings").permitAll()
+                        .pathMatchers("/api/greetings").permitAll()
+                        .pathMatchers("/api/minio/*").permitAll()
                         .pathMatchers("/minio/*").permitAll()
                         .anyExchange().authenticated()
                 )
