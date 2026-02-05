@@ -6,7 +6,7 @@ data:
   SPRING_R2DBC_URL: "r2dbc:postgresql://postgres:5432/appdb"
   MINIO_URL: "http://minio:9000"
   MINIO_BUCKET_NAME: "iaka-documents"
-  SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: "http://keycloak.keycloak-namespace.svc.cluster.local:8080/realms/intwork"
+  SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: "http://auth.s4v3.local/realms/intwork"
 ---
 apiVersion: v1
 kind: Secret
@@ -98,6 +98,11 @@ spec:
             port: 8080
           initialDelaySeconds: 30
           periodSeconds: 10
+      hostAliases:
+        - ip: "172.21.0.2"
+          hostnames:
+            - "auth.s4v3.local"
+            - "s4v3.local"
 ---
 apiVersion: v1
 kind: Service
