@@ -6,3 +6,4 @@ resources:
   - postgres.yaml
   - minio.yaml
   - be-minio.yaml
+  - be-minio-ingress.yaml

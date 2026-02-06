@@ -40,6 +40,7 @@ spec:
       containers:
       - name: be-minio
         image: gluonstream/be-minio:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
         env:
