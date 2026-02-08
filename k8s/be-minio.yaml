@@ -100,7 +100,7 @@ spec:
           initialDelaySeconds: 30
           periodSeconds: 10
       hostAliases:
-        - ip: "172.21.0.2"
+        - ip: "192.168.188.160"
           hostnames:
             - "auth.s4v3.local"
             - "s4v3.local"
