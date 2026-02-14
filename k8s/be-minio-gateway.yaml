@@ -1,0 +1,36 @@
+#apiVersion: gateway.networking.k8s.io/v1
+#kind: Gateway
+#metadata:
+#  name: be-minio-gateway
+#  namespace: be-minio
+#spec:
+#  gatewayClassName: nginx
+#  listeners:
+#    - name: http
+#      port: 80
+#      protocol: HTTP
+#      allowedRoutes:
+#        namespaces:
+#          from: All
+#---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: be-minio-route
+  namespace: be-minio
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "300m"
+spec:
+  parentRefs:
+    - name: keycloak-gateway
+      namespace: keycloak-namespace
+  hostnames:
+    - minio.s4v3.local
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: minio
+          port: 9000

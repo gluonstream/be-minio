@@ -4,7 +4,7 @@ metadata:
   name: be-minio-config
 data:
   SPRING_R2DBC_URL: "r2dbc:postgresql://postgres:5432/appdb"
-  MINIO_URL: "http://minio:9000"
+  MINIO_URL: "http://minio.s4v3.local"
   MINIO_BUCKET_NAME: "iaka-documents"
   SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: "http://auth.s4v3.local/realms/intwork"
 ---
@@ -104,6 +104,7 @@ spec:
           hostnames:
             - "auth.s4v3.local"
             - "s4v3.local"
+            - "minio.s4v3.local"
 ---
 apiVersion: v1
 kind: Service
