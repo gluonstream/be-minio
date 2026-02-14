@@ -15,8 +15,11 @@ import java.net.URI;
 @Configuration
 public class MinioConfig {
 
-    @Value("${minio.url}")
-    private String url;
+    @Value("${minio.internal-url}")
+    private String internalUrl;
+
+    @Value("${minio.external-url}")
+    private String externalUrl;
 
     @Value("${minio.access-key}")
     private String accessKey;
@@ -27,7 +30,7 @@ public class MinioConfig {
     @Bean
     public S3AsyncClient s3AsyncClient() {
         return S3AsyncClient.builder()
-                .endpointOverride(URI.create(url))
+                .endpointOverride(URI.create(internalUrl))
                 .credentialsProvider(StaticCredentialsProvider.create(
                         AwsBasicCredentials.create(accessKey, secretKey)))
                 .region(Region.US_EAST_1) // MinIO typically doesn't care about region, but SDK requires it
@@ -38,7 +41,7 @@ public class MinioConfig {
     @Bean
     public S3Presigner s3Presigner() {
         return S3Presigner.builder()
-                .endpointOverride(URI.create(url))
+                .endpointOverride(URI.create(externalUrl))
                 .credentialsProvider(StaticCredentialsProvider.create(
                         AwsBasicCredentials.create(accessKey, secretKey)))
                 .region(Region.US_EAST_1)

@@ -5,8 +5,13 @@ metadata:
 data:
   SPRING_R2DBC_URL: "r2dbc:postgresql://postgres:5432/appdb"
   MINIO_URL: "http://minio.s4v3.local"
+  MINIO_EXTERNAL_URL: "http://minio.s4v3.local"
+  MINIO_INTERNAL_URL: "http://minio.minio-namespace.svc.cluster.local:9000"
   MINIO_BUCKET_NAME: "iaka-documents"
   SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: "http://auth.s4v3.local/realms/intwork"
+  AUTH_EXTERNAL_ISSUER_URI: "http://auth.s4v3.local/realms/intwork"
+  # Set to internal Keycloak service DNS so the pod doesn't need hostAliases.
+  AUTH_INTERNAL_JWK_SET_URI: "http://keycloak.keycloak-namespace.svc.cluster.local:8080/realms/intwork/protocol/openid-connect/certs"
 ---
 apiVersion: v1
 kind: Secret
@@ -49,6 +54,16 @@ spec:
             configMapKeyRef:
               name: be-minio-config
               key: SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI
+        - name: AUTH_EXTERNAL_ISSUER_URI
+          valueFrom:
+            configMapKeyRef:
+              name: be-minio-config
+              key: AUTH_EXTERNAL_ISSUER_URI
+        - name: AUTH_INTERNAL_JWK_SET_URI
+          valueFrom:
+            configMapKeyRef:
+              name: be-minio-config
+              key: AUTH_INTERNAL_JWK_SET_URI
         - name: SPRING_R2DBC_URL
           valueFrom:
             configMapKeyRef:
@@ -59,6 +74,16 @@ spec:
             configMapKeyRef:
               name: be-minio-config
               key: MINIO_URL
+        - name: MINIO_EXTERNAL_URL
+          valueFrom:
+            configMapKeyRef:
+              name: be-minio-config
+              key: MINIO_EXTERNAL_URL
+        - name: MINIO_INTERNAL_URL
+          valueFrom:
+            configMapKeyRef:
+              name: be-minio-config
+              key: MINIO_INTERNAL_URL
         - name: MINIO_BUCKET_NAME
           valueFrom:
             configMapKeyRef:
@@ -99,12 +124,12 @@ spec:
             port: 8080
           initialDelaySeconds: 30
           periodSeconds: 10
-      hostAliases:
-        - ip: "172.21.0.2"
-          hostnames:
-            - "auth.s4v3.local"
-            - "s4v3.local"
-            - "minio.s4v3.local"
+#      hostAliases:
+#        - ip: "172.21.0.2"
+#          hostnames:
+#            - "auth.s4v3.local"
+#            - "s4v3.local"
+#            - "minio.s4v3.local"
 ---
 apiVersion: v1
 kind: Service
