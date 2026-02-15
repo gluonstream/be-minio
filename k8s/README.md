@@ -17,11 +17,23 @@ The easiest way to deploy everything at once is using the provided `kustomizatio
 kubectl apply -k k8s/
 ```
 
+### Option 2: Environment-specific overlays
+
+Use one of the overlays to pick the appropriate ConfigMap:
+
+```bash
+kubectl apply -k k8s/overlays/local
+```
+
+```bash
+kubectl apply -k k8s/overlays/net
+```
+
 ## Verification
 
-Check the status of your pods in the `be-minio` namespace:
+Check the status of your pods in the `minio-namespace` namespace:
 ```bash
-kubectl get pods -n be-minio
+kubectl get pods -n minio-namespace
 ```
 
 Wait until all pods show `1/1` in the `READY` column.
@@ -33,7 +45,7 @@ Since this environment is set up for `kind` with `NodePort` exposure:
 - **Application API**: Accessible at `http://localhost:30080` (or `http://<node-ip>:30080`).
 - **MinIO Console**: If you want to access the MinIO UI, you may need to use port-forwarding as it is currently exposed via ClusterIP internally:
   ```bash
-  kubectl port-forward service/minio 9001:9001 -n be-minio
+  kubectl port-forward service/minio 9001:9001 -n minio-namespace
   ```
   Then visit `http://localhost:9001`.
 
@@ -41,13 +53,13 @@ Since this environment is set up for `kind` with `NodePort` exposure:
 
 Check logs for the application:
 ```bash
-kubectl logs -l app=be-minio -f -n be-minio
+kubectl logs -l app=be-minio -f -n minio-namespace
 ```
 
 Check logs for PostgreSQL or MinIO:
 ```bash
-kubectl logs -l app=postgres -n be-minio
-kubectl logs -l app=minio -n be-minio
+kubectl logs -l app=postgres -n minio-namespace
+kubectl logs -l app=minio -n minio-namespace
 ```
 
 ## Cleanup
@@ -56,7 +68,11 @@ To remove all resources created by these manifests:
 
 ```bash
 kubectl delete -k k8s/
+
+kubectl delete -k k8s/overlays/local
+
+kubectl delete -k k8s/overlays/net
 ```
 
 In kind NodePort doesn't work, unless you create the cluster with a special config. Workaround:
-`kubectl port-forward service/be-minio 8080:8080 -n be-minio`
+`kubectl port-forward service/be-minio 8080:8080 -n minio-namespace`

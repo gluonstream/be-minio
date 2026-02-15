@@ -11,6 +11,7 @@ spec:
       namespace: gateway-namespace
   hostnames:
     - minio.s4v3.local
+    - minio.s4v3.net
   rules:
     - matches:
         - path:

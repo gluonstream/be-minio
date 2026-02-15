@@ -1,19 +1,4 @@
 apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: be-minio-config
-data:
-  SPRING_R2DBC_URL: "r2dbc:postgresql://postgres:5432/appdb"
-  MINIO_URL: "http://minio.s4v3.local"
-  MINIO_EXTERNAL_URL: "http://minio.s4v3.local"
-  MINIO_INTERNAL_URL: "http://minio.minio-namespace.svc.cluster.local:9000"
-  MINIO_BUCKET_NAME: "iaka-documents"
-  SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: "http://auth.s4v3.local/realms/intwork"
-  AUTH_EXTERNAL_ISSUER_URI: "http://auth.s4v3.local/realms/intwork"
-  # Set to internal Keycloak service DNS so the pod doesn't need hostAliases.
-  AUTH_INTERNAL_JWK_SET_URI: "http://keycloak.keycloak-namespace.svc.cluster.local:8080/realms/intwork/protocol/openid-connect/certs"
----
-apiVersion: v1
 kind: Secret
 metadata:
   name: be-minio-secret
