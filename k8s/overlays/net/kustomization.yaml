@@ -4,3 +4,4 @@ namespace: minio-namespace
 resources:
   - ../../base
   - configmap-net.yaml
+  - be-minio-httpRoute.yaml
