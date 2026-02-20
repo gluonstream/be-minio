@@ -121,10 +121,9 @@ kind: Service
 metadata:
   name: be-minio
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: be-minio
   ports:
   - port: 8080
     targetPort: 8080
-    nodePort: 30080

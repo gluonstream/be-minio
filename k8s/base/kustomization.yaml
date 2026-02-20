@@ -6,4 +6,4 @@ resources:
   - postgres.yaml
   - minio.yaml
   - be-minio.yaml
-  - be-minio-gateway.yaml
+  - be-minio-httpRoute.yaml
