@@ -4,5 +4,6 @@ namespace: minio-namespace
 resources:
   - ../../base
   - configmap-net.yaml
+  - minio-pv.yaml
   - be-minio-httpRoute.yaml
   - postgres-pvc.yaml
