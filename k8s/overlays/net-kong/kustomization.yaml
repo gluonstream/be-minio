@@ -7,3 +7,4 @@ resources:
   - minio-pv.yaml
   - be-minio-httpRoute.yaml
   - postgres-pvc.yaml
+  - minio-pvc.yaml

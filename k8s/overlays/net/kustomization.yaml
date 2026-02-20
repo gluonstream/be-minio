@@ -6,3 +6,4 @@ resources:
   - configmap-net.yaml
   - be-minio-httpRoute.yaml
   - postgres-pvc.yaml
+  - minio-pvc.yaml
