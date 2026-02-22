@@ -4,7 +4,7 @@ metadata:
   name: be-minio-route
   namespace: minio-namespace
   annotations:
-    nginx.ingress.kubernetes.io/proxy-body-size: "2000m"
+    nginx.ingress.kubernetes.io/proxy-body-size: "300m"
 spec:
   parentRefs:
     - name: global-gateway
