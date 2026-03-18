@@ -1,12 +1,29 @@
-FROM gradle:8.5-jdk21-alpine AS build
+# Stage 1: Build the JAR
+FROM eclipse-temurin:25-jdk AS builder
 WORKDIR /app
-COPY build.gradle.kts settings.gradle.kts ./
-COPY gradle ./gradle
-COPY src ./src
-RUN gradle build -x test --no-daemon
 
-FROM eclipse-temurin:21-jre-alpine
+# Copy gradle files for caching
+COPY gradlew .
+COPY gradle gradle
+COPY build.gradle.kts .
+COPY settings.gradle.kts .
+
+# Make gradlew executable
+RUN chmod +x gradlew
+
+# Build the JAR, skipping tests for speed
+COPY src src
+RUN ./gradlew bootJar -x test --no-daemon
+
+# Stage 2: Runtime image
+FROM eclipse-temurin:25-jre
 WORKDIR /app
-COPY --from=build /app/build/libs/*.jar app.jar
+
+# Copy the built JAR from the builder stage
+# We assume the bootJar output is the only jar or we'll pick the first one
+COPY --from=builder /app/build/libs/*.jar app.jar
+
 EXPOSE 8080
+
+# Standard Spring Boot entrypoint
 ENTRYPOINT ["java", "-jar", "app.jar"]

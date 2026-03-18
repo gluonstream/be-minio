@@ -47,6 +47,7 @@ public class GreetingHandler {
     public Mono<ServerResponse> me(ServerRequest serverRequest) {
         return serverRequest.principal()
                 .cast(JwtAuthenticationToken.class)
+                .log()
                 .flatMap(jwtToken -> {
                     String username = jwtToken.getToken().getClaimAsString("preferred_username");
                     return ServerResponse.ok().bodyValue(Map.of(

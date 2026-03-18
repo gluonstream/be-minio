@@ -66,6 +66,7 @@ public class AppRouter {
         return RouterFunctions.route()
                 .nest(RequestPredicates.path("/api"), builder -> builder
                         .add(route(GET("/hello"), greetingHandler::handleHello))
+                        .add(route(GET("/bff/user"), greetingHandler::handleHello))
                         .add(route(GET("/bff/me"), greetingHandler::me))
                         .add(route(GET("/greetings"), greetingHandler::handleGreetings))
                         .add(route(GET("/appointment"), greetingHandler::handleAppointment))
